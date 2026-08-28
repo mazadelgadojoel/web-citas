@@ -86,7 +86,7 @@ import WizardLayout from '../layouts/WizardLayout.astro';
   const mapsLink = document.getElementById('maps-link') as HTMLAnchorElement;
   const waBtn = document.getElementById('wa-btn') as HTMLAnchorElement;
 
-  if (subtitle) subtitle.textContent = `${sweetName}, he preparado algo especial basado en tus elecciones. 🤍`;
+  if (subtitle) subtitle.textContent = `He preparado algo especial para ti 🤍`;
   if (placeEl) placeEl.textContent = state.place;
   if (timeEl) timeEl.textContent = state.timeLabel || state.time;
   if (logisticsEl) logisticsEl.textContent = state.notes ? `${state.logistics}. ${state.notes}` : state.logistics;
