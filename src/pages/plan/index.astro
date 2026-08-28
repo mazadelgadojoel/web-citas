@@ -50,9 +50,8 @@ import { categorias } from '../../data/destinos';
 </WizardLayout>
 
 <script>
-  import { KEYS, requireFields, setField } from '../../lib/wizard';
+  import { KEYS, setField } from '../../lib/wizard';
 
-  requireFields(['category']);
   const cards = document.querySelectorAll<HTMLButtonElement>('#category-grid button');
   const continueBtn = document.getElementById('continue-btn') as HTMLButtonElement;
   const customBox = document.getElementById('custom-box') as HTMLDivElement;
