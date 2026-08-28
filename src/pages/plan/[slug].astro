@@ -1,0 +1,87 @@
+---
+import WizardLayout from '../../layouts/WizardLayout.astro';
+import { destinos, getCategoria } from '../../data/destinos';
+
+export function getStaticPaths() {
+  return Object.keys(destinos).map((slug) => ({ params: { slug } }));
+}
+
+const { slug } = Astro.params;
+const categoria = getCategoria(slug ?? '')!;
+const lugares = destinos[slug ?? ''] ?? [];
+---
+
+<WizardLayout title={`Proposal ✨ - ${categoria.nombre}`} progress={45}>
+  <main class="flex-1 flex flex-col items-center justify-center pt-24 pb-16 px-gutter min-h-screen">
+    <div class="w-full max-w-container-max mx-auto">
+      <div class="letter-card rounded-[20px] p-8">
+        <a href="/plan" class="text-outline text-sm mb-6 inline-flex items-center gap-1 hover:text-primary">
+          <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+          Volver
+        </a>
+        <div class="flex flex-col items-center text-center mb-8">
+          <h1 class="font-script text-script-2xl sm:text-script-3xl text-on-surface leading-[1.15] mb-3">
+            {categoria.titulo}
+          </h1>
+          <span class="heart-divider mb-4">♡</span>
+          <p class="font-body-md text-body-md text-on-surface-variant">Elige dónde nos vemos 🤍</p>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8" id="place-grid">
+          {lugares.map((lugar) => (
+            <button
+              type="button"
+              class="glass-option rounded-2xl p-5 flex items-center justify-between gap-3 w-full text-left"
+              data-nombre={lugar.nombre}
+              data-maps={lugar.maps}
+            >
+              <span class="font-body-md text-body-md text-on-surface">{lugar.nombre}</span>
+              <a
+                href={lugar.maps}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="maps-link text-primary shrink-0"
+                aria-label={`Ver ${lugar.nombre} en Maps`}
+              >
+                <span class="material-symbols-outlined">location_on</span>
+              </a>
+            </button>
+          ))}
+        </div>
+        <button class="btn-primary" id="continue-btn" disabled>Continuar ✨</button>
+      </div>
+    </div>
+  </main>
+</WizardLayout>
+
+<script>
+  import { KEYS, requireFields, setField } from '../../lib/wizard';
+
+  requireFields(['name', 'category']);
+
+  const cards = document.querySelectorAll<HTMLButtonElement>('#place-grid button');
+  const continueBtn = document.getElementById('continue-btn') as HTMLButtonElement;
+  let selected: { nombre: string; maps: string } | null = null;
+
+  document.querySelectorAll('.maps-link').forEach((link) => {
+    link.addEventListener('click', (e) => e.stopPropagation());
+  });
+
+  cards.forEach((card) => {
+    card.addEventListener('click', () => {
+      cards.forEach((c) => c.classList.remove('selected'));
+      card.classList.add('selected');
+      selected = {
+        nombre: card.dataset.nombre ?? '',
+        maps: card.dataset.maps ?? '',
+      };
+      continueBtn.disabled = false;
+    });
+  });
+
+  continueBtn.addEventListener('click', () => {
+    if (!selected) return;
+    setField(KEYS.place, selected.nombre);
+    setField(KEYS.maps, selected.maps);
+    window.location.href = '/horario';
+  });
+</script>

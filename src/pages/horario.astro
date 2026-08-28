@@ -1,0 +1,120 @@
+---
+import WizardLayout from '../layouts/WizardLayout.astro';
+import { logisticas } from '../data/destinos';
+---
+
+<WizardLayout title="Horario y Logística" progress={75}>
+  <main class="flex-1 w-full max-w-container-max mx-auto px-gutter flex flex-col items-center justify-center min-h-screen pt-24 pb-16">
+    <div class="letter-card rounded-[20px] w-full p-8 md:p-10 flex flex-col gap-10 relative overflow-hidden">
+      <div class="absolute -top-20 -right-20 w-64 h-64 bg-secondary-container rounded-full mix-blend-multiply filter blur-3xl opacity-50 pointer-events-none"></div>
+
+      <div class="text-center relative z-10">
+        <h1 class="font-script text-script-2xl sm:text-script-3xl text-on-surface leading-[1.15] mb-3">
+          ¿Cuándo y cómo
+          <em class="block text-primary">nos vemos?</em>
+        </h1>
+        <span class="heart-divider mb-4">♡</span>
+        <p class="font-body-lg text-body-lg text-on-surface-variant">Elige el momento perfecto para nuestra cita 🕒</p>
+      </div>
+
+      <div class="flex flex-col gap-4 relative z-10">
+        <label class="font-label-sm text-label-sm text-outline uppercase tracking-wider" for="time-select">
+          Horario preferido
+        </label>
+        <select
+          id="time-select"
+          class="w-full bg-surface-container-lowest/50 border-2 border-outline-variant rounded-2xl px-4 py-4 font-body-lg text-body-lg text-on-surface focus:border-primary focus:outline-none transition-colors appearance-none relative"
+        >
+          <option value="" disabled selected>Selecciona una hora 🕒</option>
+          <option value="10:00 AM">10:00 AM</option>
+          <option value="11:00 AM">11:00 AM</option>
+          <option value="12:00 PM">12:00 PM</option>
+          <option value="1:00 PM">1:00 PM</option>
+          <option value="2:00 PM">2:00 PM</option>
+          <option value="3:00 PM">3:00 PM</option>
+          <option value="4:00 PM">4:00 PM</option>
+          <option value="5:00 PM">5:00 PM</option>
+          <option value="6:00 PM">6:00 PM</option>
+          <option value="7:00 PM">7:00 PM</option>
+          <option value="8:00 PM">8:00 PM</option>
+          <option value="9:00 PM">9:00 PM</option>
+          <option value="10:00 PM">10:00 PM</option>
+          <option value="11:00 PM">11:00 PM</option>
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-4 relative z-10">
+        <label class="font-label-sm text-label-sm text-outline uppercase tracking-wider">¿Paso por ti?</label>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" id="logistics-grid">
+          {logisticas.map((item) => (
+            <button
+              type="button"
+              class="glass-option rounded-2xl p-4 font-body-lg text-body-lg"
+              data-id={item.id}
+              data-label={item.detalle}
+            >
+              {item.etiqueta}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-2 relative z-10">
+        <label class="font-label-sm text-label-sm text-outline uppercase tracking-wider" for="notes">
+          Detalles adicionales 📍
+        </label>
+        <input
+          class="w-full bg-surface-container-lowest/50 border-0 border-b-2 border-outline-variant px-4 py-3 font-body-md text-body-md text-on-surface placeholder:text-on-surface-variant/50 focus:ring-0 focus:border-tertiary transition-colors rounded-t-md"
+          id="notes"
+          placeholder="Ej. te espero en la entrada..."
+          type="text"
+        />
+      </div>
+
+      <p id="horario-error" class="hidden text-error text-sm text-center relative z-10">Elige hora y cómo nos vemos.</p>
+
+      <button class="btn-primary relative z-10" id="continue-btn" disabled>Continuar ✨</button>
+    </div>
+  </main>
+</WizardLayout>
+
+<script>
+  import { KEYS, requireFields, setField } from '../lib/wizard';
+
+  requireFields(['place']);
+
+  const timeSelect = document.getElementById('time-select') as HTMLSelectElement;
+  const logBtns = document.querySelectorAll<HTMLButtonElement>('#logistics-grid button');
+  const continueBtn = document.getElementById('continue-btn') as HTMLButtonElement;
+  const notes = document.getElementById('notes') as HTMLInputElement;
+
+  let timeLabel = '';
+  let logistics = '';
+
+  function updateContinue() {
+    continueBtn.disabled = !(timeLabel && logistics);
+  }
+
+  timeSelect.addEventListener('change', () => {
+    timeLabel = timeSelect.value;
+    updateContinue();
+  });
+
+  logBtns.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      logBtns.forEach((b) => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      logistics = btn.dataset.label ?? '';
+      updateContinue();
+    });
+  });
+
+  continueBtn.addEventListener('click', () => {
+    if (!timeLabel || !logistics) return;
+    setField(KEYS.time, timeLabel);
+    setField(KEYS.timeLabel, timeLabel);
+    setField(KEYS.logistics, logistics);
+    setField(KEYS.notes, notes.value.trim());
+    window.location.href = '/confirmacion';
+  });
+</script>

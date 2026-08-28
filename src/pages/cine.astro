@@ -1,0 +1,128 @@
+---
+import WizardLayout from '../layouts/WizardLayout.astro';
+import { cines, carteleras, generosCine } from '../data/destinos';
+---
+
+<WizardLayout title="¿Qué película vemos? 🎬" progress={50}>
+  <main class="flex-1 flex flex-col items-center justify-center pt-24 pb-16 px-gutter min-h-screen">
+    <div class="w-full max-w-container-max mx-auto">
+      <div class="letter-card rounded-[20px] p-8">
+        <a href="/plan" class="text-outline text-sm mb-6 inline-flex items-center gap-1 hover:text-primary">
+          <span class="material-symbols-outlined text-[18px]">arrow_back</span>
+          Volver
+        </a>
+        <div class="flex flex-col items-center text-center mb-8">
+          <h1 class="font-script text-script-2xl sm:text-script-3xl text-on-surface leading-[1.15] mb-3">
+            ¿Qué película vemos?
+            <em class="block text-primary">juntos 🎬</em>
+          </h1>
+          <span class="heart-divider mb-4">♡</span>
+          <p class="font-body-md text-body-md text-on-surface-variant">Elige género y cine para nuestra cita</p>
+        </div>
+
+        <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-3">Género</p>
+        <div class="grid grid-cols-2 gap-4 mb-10" id="genre-grid">
+          {generosCine.map((genero) => (
+            <button
+              type="button"
+              class={`glass-option rounded-2xl p-6 flex flex-col items-center justify-center gap-3 ${genero.id === 'scifi' ? 'col-span-2 sm:col-span-1' : ''}`}
+              data-genre={genero.nombre}
+            >
+              <span class="text-4xl drop-shadow-sm">{genero.emoji}</span>
+              <span class="font-body-lg text-body-lg text-on-surface-variant">{genero.nombre}</span>
+            </button>
+          ))}
+        </div>
+
+        <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-3">Cine</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8" id="cine-grid">
+          {cines.map((cine) => (
+            <button
+              type="button"
+              class="glass-option rounded-2xl p-5 flex items-center justify-between gap-3 w-full text-left"
+              data-nombre={cine.nombre}
+              data-maps={cine.maps}
+            >
+              <span class="font-body-md text-body-md text-on-surface">{cine.nombre}</span>
+              <a
+                href={cine.maps}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="maps-link text-primary shrink-0"
+                aria-label={`Ver ${cine.nombre} en Maps`}
+              >
+                <span class="material-symbols-outlined">location_on</span>
+              </a>
+            </button>
+          ))}
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 mb-8">
+          {carteleras.map((cartelera) => (
+            <a
+              href={cartelera.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="flex-1 text-center glass-option rounded-full py-3 px-4 text-sm text-primary"
+            >
+              Cartelera {cartelera.nombre}
+            </a>
+          ))}
+        </div>
+
+        <button class="btn-primary" id="continue-btn" disabled>Continuar ✨</button>
+      </div>
+    </div>
+  </main>
+</WizardLayout>
+
+<script>
+  import { KEYS, requireFields, setField } from '../lib/wizard';
+
+  requireFields(['category']);
+
+  const genreCards = document.querySelectorAll<HTMLButtonElement>('#genre-grid button');
+  const cineCards = document.querySelectorAll<HTMLButtonElement>('#cine-grid button');
+  const continueBtn = document.getElementById('continue-btn') as HTMLButtonElement;
+
+  let genre = '';
+  let cine: { nombre: string; maps: string } | null = null;
+
+  function updateContinue() {
+    continueBtn.disabled = !(genre && cine);
+  }
+
+  document.querySelectorAll('.maps-link').forEach((link) => {
+    link.addEventListener('click', (e) => e.stopPropagation());
+  });
+
+  genreCards.forEach((card) => {
+    card.addEventListener('click', () => {
+      genreCards.forEach((c) => c.classList.remove('selected'));
+      card.classList.add('selected');
+      genre = card.dataset.genre ?? '';
+      updateContinue();
+    });
+  });
+
+  cineCards.forEach((card) => {
+    card.addEventListener('click', () => {
+      cineCards.forEach((c) => c.classList.remove('selected'));
+      card.classList.add('selected');
+      cine = {
+        nombre: card.dataset.nombre ?? '',
+        maps: card.dataset.maps ?? '',
+      };
+      updateContinue();
+    });
+  });
+
+  continueBtn.addEventListener('click', () => {
+    if (!genre || !cine) return;
+    setField(KEYS.category, 'cines');
+    setField(KEYS.genre, genre);
+    setField(KEYS.place, cine.nombre);
+    setField(KEYS.maps, cine.maps);
+    window.location.href = '/horario';
+  });
+</script>

@@ -1,0 +1,159 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    background-color: #f9e8df;
+    color: #3a1d17;
+  }
+}
+
+@layer components {
+  /* Tarjeta tipo "carta / sobre" con borde doble decorativo */
+  .letter-card {
+    position: relative;
+    background:
+      linear-gradient(180deg, rgba(255, 251, 246, 0.95), rgba(255, 244, 235, 0.95));
+    border: 1px solid rgba(176, 58, 72, 0.18);
+    border-radius: 20px;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, 0.9) inset,
+      0 22px 60px -20px rgba(140, 50, 60, 0.35),
+      0 8px 24px -16px rgba(140, 50, 60, 0.2);
+  }
+
+  /* Marco interior punteado/decorativo tipo invitación */
+  .letter-card::before {
+    content: "";
+    position: absolute;
+    inset: 12px;
+    border: 1.5px dashed rgba(176, 58, 72, 0.35);
+    border-radius: 14px;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .letter-card > * {
+    position: relative;
+    z-index: 2;
+  }
+
+  /* Sello de cera */
+  .wax-seal {
+    width: 64px;
+    height: 64px;
+    border-radius: 9999px;
+    background:
+      radial-gradient(circle at 32% 28%, #d96c6c, #b03a48 55%, #8c232f);
+    box-shadow:
+      0 6px 18px -6px rgba(140, 30, 40, 0.7),
+      inset 0 2px 6px rgba(255, 255, 255, 0.35),
+      inset 0 -4px 8px rgba(80, 10, 20, 0.4);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    transform: rotate(-8deg);
+  }
+
+  .glass-option {
+    background: rgba(255, 251, 246, 0.75);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    border: 1.5px solid rgba(176, 58, 72, 0.16);
+    box-shadow: 0 2px 10px rgba(140, 60, 60, 0.05);
+    transition: all 0.22s ease;
+    color: #3a1d17;
+  }
+
+  .glass-option:hover {
+    background: rgba(255, 255, 255, 0.98);
+    transform: translateY(-3px) rotate(-0.5deg);
+    box-shadow: 0 14px 34px -12px rgba(176, 58, 72, 0.35);
+    border-color: rgba(176, 58, 72, 0.5);
+  }
+
+  .glass-option.selected,
+  .time-btn.active,
+  .glass-option.selected > span:last-child,
+  .time-btn.active > span {
+    background: linear-gradient(135deg, #f7c6c0, #f3a99e);
+    border-color: #b03a48;
+    box-shadow: 0 8px 24px -10px rgba(176, 58, 72, 0.5);
+    color: #5c0912;
+  }
+
+  .btn-primary {
+    @apply w-full bg-gradient-to-r from-primary to-rose font-headline-md text-[17px] md:text-headline-md py-4 px-8 rounded-full flex items-center justify-center gap-2 min-h-touch-target disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-300 shadow-lg shadow-primary/30;
+    color: #fff;
+    letter-spacing: 0.01em;
+  }
+  .btn-primary:not(:disabled):hover {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow: 0 18px 40px -12px rgba(176, 58, 72, 0.55);
+  }
+
+  .input-line {
+    @apply w-full bg-transparent border-0 border-b-2 border-rose/30 focus:border-primary text-center font-body-lg text-body-lg text-on-surface placeholder:text-on-surface-variant/50 py-3 px-4 focus:outline-none focus:ring-0 transition-colors;
+  }
+
+  /* Decoración separadora con corazón */
+  .heart-divider {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    color: rgba(176, 58, 72, 0.55);
+    white-space: nowrap;
+  }
+  .heart-divider::before,
+  .heart-divider::after {
+    content: "";
+    width: 44px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(176, 58, 72, 0.4));
+  }
+  .heart-divider::after {
+    background: linear-gradient(90deg, rgba(176, 58, 72, 0.4), transparent);
+  }
+}
+
+/* Corazones flotantes */
+.floating-heart {
+  position: fixed;
+  bottom: -30px;
+  animation: floatUp 5s ease-in infinite;
+  opacity: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+
+@keyframes floatUp {
+  0% {
+    transform: translateY(0) translateX(0) rotate(0deg) scale(0.7);
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.7;
+  }
+  85% {
+    opacity: 0.55;
+  }
+  100% {
+    transform: translateY(-110vh) translateX(30px) rotate(20deg) scale(1.15);
+    opacity: 0;
+  }
+}
+
+@keyframes growLine {
+  from {
+    width: 0;
+  }
+  to {
+    width: var(--progress, 100%);
+  }
+}
+
+.progress-fill {
+  animation: growLine 0.8s ease-out forwards;
+}
