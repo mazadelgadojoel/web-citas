@@ -37,23 +37,28 @@ import { cines, carteleras, generosCine } from '../data/destinos';
         <p class="font-label-sm text-label-sm text-outline uppercase tracking-wider mb-3">Cine</p>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8" id="cine-grid">
           {cines.map((cine) => (
-            <button
-              type="button"
-              class="glass-option rounded-2xl p-5 flex items-center justify-between gap-3 w-full text-left"
+            <div
+              class="glass-option rounded-2xl p-3 pl-5 flex items-center justify-between gap-3 w-full"
               data-nombre={cine.nombre}
               data-maps={cine.maps}
             >
-              <span class="font-body-md text-body-md text-on-surface">{cine.nombre}</span>
+              <button
+                type="button"
+                class="flex-1 flex items-center text-left py-2"
+                aria-label={`Elegir ${cine.nombre}`}
+              >
+                <span class="font-body-md text-body-md text-on-surface">{cine.nombre}</span>
+              </button>
               <a
                 href={cine.maps}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="maps-link text-primary shrink-0"
+                class="maps-link text-primary shrink-0 p-4"
                 aria-label={`Ver ${cine.nombre} en Maps`}
               >
                 <span class="material-symbols-outlined">location_on</span>
               </a>
-            </button>
+            </div>
           ))}
         </div>
 
@@ -82,7 +87,7 @@ import { cines, carteleras, generosCine } from '../data/destinos';
   requireFields(['category']);
 
   const genreCards = document.querySelectorAll<HTMLButtonElement>('#genre-grid button');
-  const cineCards = document.querySelectorAll<HTMLButtonElement>('#cine-grid button');
+  const cineCards = document.querySelectorAll<HTMLDivElement>('#cine-grid .glass-option');
   const continueBtn = document.getElementById('continue-btn') as HTMLButtonElement;
 
   let genre = '';
@@ -106,7 +111,9 @@ import { cines, carteleras, generosCine } from '../data/destinos';
   });
 
   cineCards.forEach((card) => {
-    card.addEventListener('click', () => {
+    card.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      if (target.closest('.maps-link')) return;
       cineCards.forEach((c) => c.classList.remove('selected'));
       card.classList.add('selected');
       cine = {

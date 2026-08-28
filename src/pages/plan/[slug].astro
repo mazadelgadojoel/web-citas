@@ -28,23 +28,28 @@ const lugares = destinos[slug ?? ''] ?? [];
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8" id="place-grid">
           {lugares.map((lugar) => (
-            <button
-              type="button"
-              class="glass-option rounded-2xl p-5 flex items-center justify-between gap-3 w-full text-left"
+            <div
+              class="glass-option rounded-2xl p-3 pl-5 flex items-center justify-between gap-3 w-full"
               data-nombre={lugar.nombre}
               data-maps={lugar.maps}
             >
-              <span class="font-body-md text-body-md text-on-surface">{lugar.nombre}</span>
+              <button
+                type="button"
+                class="flex-1 flex items-center text-left py-2"
+                aria-label={`Elegir ${lugar.nombre}`}
+              >
+                <span class="font-body-md text-body-md text-on-surface">{lugar.nombre}</span>
+              </button>
               <a
                 href={lugar.maps}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="maps-link text-primary shrink-0"
+                class="maps-link text-primary shrink-0 p-4"
                 aria-label={`Ver ${lugar.nombre} en Maps`}
               >
                 <span class="material-symbols-outlined">location_on</span>
               </a>
-            </button>
+            </div>
           ))}
         </div>
         <button class="btn-primary" id="continue-btn" disabled>Continuar ✨</button>
@@ -58,7 +63,7 @@ const lugares = destinos[slug ?? ''] ?? [];
 
   requireFields(['category']);
 
-  const cards = document.querySelectorAll<HTMLButtonElement>('#place-grid button');
+  const cards = document.querySelectorAll<HTMLDivElement>('#place-grid .glass-option');
   const continueBtn = document.getElementById('continue-btn') as HTMLButtonElement;
   let selected: { nombre: string; maps: string } | null = null;
 
@@ -67,7 +72,9 @@ const lugares = destinos[slug ?? ''] ?? [];
   });
 
   cards.forEach((card) => {
-    card.addEventListener('click', () => {
+    card.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      if (target.closest('.maps-link')) return;
       cards.forEach((c) => c.classList.remove('selected'));
       card.classList.add('selected');
       selected = {
