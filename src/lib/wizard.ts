@@ -6,6 +6,7 @@ export const KEYS = {
   genre: 'cita_genre',
   time: 'cita_time',
   timeLabel: 'cita_time_label',
+  day: 'cita_day',
   logistics: 'cita_logistics',
   notes: 'cita_notes',
 } as const;
@@ -18,6 +19,7 @@ export type WizardState = {
   genre: string;
   time: string;
   timeLabel: string;
+  day: string;
   logistics: string;
   notes: string;
 };
@@ -32,6 +34,7 @@ export function readWizard(): WizardState {
     genre: get(KEYS.genre),
     time: get(KEYS.time),
     timeLabel: get(KEYS.timeLabel),
+    day: get(KEYS.day),
     logistics: get(KEYS.logistics),
     notes: get(KEYS.notes),
   };
@@ -43,8 +46,8 @@ export function setField(key: string, value: string) {
 
 export function requireFields(fields: (keyof WizardState)[], fallback = '/') {
   const state = readWizard();
-  const missing = fields.some((field) => !state[field]);
-  if (missing) window.location.replace(fallback);
+  const missing = fields.filter((field) => !state[field]);
+  if (missing.length) window.location.replace(fallback);
   return state;
 }
 
@@ -52,11 +55,13 @@ export function buildWhatsAppUrl(number: string, state: WizardState) {
   const plan = state.genre
     ? `${state.place} (${state.genre})`
     : state.place;
+  const dia = state.day || '';
   const hora = state.timeLabel || state.time;
   const logistica = state.logistics;
   const extra = state.notes.trim() ? `\nDetalles: ${state.notes.trim()}` : '';
   const text =
     `¡Acepté salir contigo! 💖\n\n` +
+    `El día: ${dia}\n` +
     `Nos vemos en: ${plan}\n` +
     `A las: ${hora}\n` +
     `Cómo nos vemos: ${logistica}${extra}\n\n` +

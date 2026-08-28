@@ -26,13 +26,13 @@ import WizardLayout from '../layouts/WizardLayout.astro';
         </p>
       </div>
 
-      <div class="w-full grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div class="w-full grid grid-cols-1 md:grid-cols-4 gap-4">
         <div class="glass-card rounded-xl p-6 flex flex-col items-center justify-center">
           <div class="w-12 h-12 rounded-full bg-primary-container/20 flex items-center justify-center text-primary mb-3">
             <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">place</span>
           </div>
           <span class="font-label-sm text-label-sm text-on-surface-variant/60 uppercase mb-1">Plan</span>
-          <h3 id="summary-place" class="font-headline-md text-[18px] leading-tight text-on-surface">—</h3>
+          <h3 id="summary-place" class="font-headline-md text-[15px] leading-tight text-on-surface">—</h3>
           <a id="maps-link" class="hidden mt-2 text-sm text-primary" target="_blank" rel="noopener noreferrer">Ver en Maps</a>
         </div>
         <div class="glass-card rounded-xl p-6 flex flex-col items-center justify-center" id="genre-card">
@@ -40,14 +40,21 @@ import WizardLayout from '../layouts/WizardLayout.astro';
             <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">movie</span>
           </div>
           <span class="font-label-sm text-label-sm text-on-surface-variant/60 uppercase mb-1">Cine</span>
-          <h3 id="summary-genre" class="font-headline-md text-[18px] leading-tight text-on-surface">—</h3>
+          <h3 id="summary-genre" class="font-headline-md text-[15px] leading-tight text-on-surface">—</h3>
         </div>
         <div class="glass-card rounded-xl p-6 flex flex-col items-center justify-center">
           <div class="w-12 h-12 rounded-full bg-secondary-container/20 flex items-center justify-center text-secondary mb-3">
+            <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">calendar_today</span>
+          </div>
+          <span class="font-label-sm text-label-sm text-on-surface-variant/60 uppercase mb-1">Día</span>
+          <h3 id="summary-day" class="font-headline-md text-[15px] leading-tight text-on-surface">—</h3>
+        </div>
+        <div class="glass-card rounded-xl p-6 flex flex-col items-center justify-center">
+          <div class="w-12 h-12 rounded-full bg-rose/20 flex items-center justify-center text-rose mb-3">
             <span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">schedule</span>
           </div>
           <span class="font-label-sm text-label-sm text-on-surface-variant/60 uppercase mb-1">Hora</span>
-          <h3 id="summary-time" class="font-headline-md text-[18px] leading-tight text-on-surface">—</h3>
+          <h3 id="summary-time" class="font-headline-md text-[15px] leading-tight text-on-surface">—</h3>
         </div>
       </div>
 
@@ -73,14 +80,14 @@ import WizardLayout from '../layouts/WizardLayout.astro';
   import { WHATSAPP_NUMBER } from '../data/config';
   import { buildWhatsAppUrl, requireFields } from '../lib/wizard';
 
-  const state = requireFields(['place', 'time', 'logistics']);
+  const state = requireFields(['place', 'day', 'time', 'logistics'], '/horario');
   const number = WHATSAPP_NUMBER;
-  const sweetName = state.name || 'Mi amor';
 
   const subtitle = document.getElementById('subtitle');
   const placeEl = document.getElementById('summary-place');
   const genreEl = document.getElementById('summary-genre');
   const genreCard = document.getElementById('genre-card');
+  const dayEl = document.getElementById('summary-day');
   const timeEl = document.getElementById('summary-time');
   const logisticsEl = document.getElementById('summary-logistics');
   const mapsLink = document.getElementById('maps-link') as HTMLAnchorElement;
@@ -88,6 +95,7 @@ import WizardLayout from '../layouts/WizardLayout.astro';
 
   if (subtitle) subtitle.textContent = `He preparado algo especial para ti 🤍`;
   if (placeEl) placeEl.textContent = state.place;
+  if (dayEl) dayEl.textContent = state.day;
   if (timeEl) timeEl.textContent = state.timeLabel || state.time;
   if (logisticsEl) logisticsEl.textContent = state.notes ? `${state.logistics}. ${state.notes}` : state.logistics;
 

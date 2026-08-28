@@ -18,6 +18,18 @@ import { logisticas } from '../data/destinos';
       </div>
 
       <div class="flex flex-col gap-4 relative z-10">
+        <label class="font-label-sm text-label-sm text-outline uppercase tracking-wider" for="day-select">
+          Día de la cita
+        </label>
+        <select
+          id="day-select"
+          class="w-full bg-surface-container-lowest/50 border-2 border-outline-variant rounded-2xl px-4 py-4 font-body-lg text-body-lg text-on-surface focus:border-primary focus:outline-none transition-colors appearance-none relative"
+        >
+          <option value="" disabled selected>Selecciona el día 📅</option>
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-4 relative z-10">
         <label class="font-label-sm text-label-sm text-outline uppercase tracking-wider" for="time-select">
           Horario preferido
         </label>
@@ -71,7 +83,7 @@ import { logisticas } from '../data/destinos';
         />
       </div>
 
-      <p id="horario-error" class="hidden text-error text-sm text-center relative z-10">Elige hora y cómo nos vemos.</p>
+      <p id="horario-error" class="hidden text-error text-sm text-center relative z-10">Elige día, hora y cómo nos vemos.</p>
 
       <button class="btn-primary relative z-10" id="continue-btn" disabled>Continuar ✨</button>
     </div>
@@ -81,19 +93,45 @@ import { logisticas } from '../data/destinos';
 <script>
   import { KEYS, requireFields, setField } from '../lib/wizard';
 
-  requireFields(['place']);
+  requireFields(['place'], '/plan');
 
+  const daySelect = document.getElementById('day-select') as HTMLSelectElement;
   const timeSelect = document.getElementById('time-select') as HTMLSelectElement;
   const logBtns = document.querySelectorAll<HTMLButtonElement>('#logistics-grid button');
   const continueBtn = document.getElementById('continue-btn') as HTMLButtonElement;
   const notes = document.getElementById('notes') as HTMLInputElement;
 
+  const DIAS = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
+  const MESES = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+  (function fillDays() {
+    const today = new Date();
+    for (let i = 1; i <= 7; i++) {
+      const d = new Date(today);
+      d.setDate(today.getDate() + i);
+      const label =
+        i === 1
+          ? `Mañana (${DIAS[d.getDay()]} ${d.getDate()} de ${MESES[d.getMonth()]})`
+          : `${DIAS[d.getDay()]} ${d.getDate()} de ${MESES[d.getMonth()]}`;
+      const opt = document.createElement('option');
+      opt.value = label;
+      opt.textContent = label;
+      daySelect.appendChild(opt);
+    }
+  })();
+
+  let day = '';
   let timeLabel = '';
   let logistics = '';
 
   function updateContinue() {
-    continueBtn.disabled = !(timeLabel && logistics);
+    continueBtn.disabled = !(day && timeLabel && logistics);
   }
+
+  daySelect.addEventListener('change', () => {
+    day = daySelect.value;
+    updateContinue();
+  });
 
   timeSelect.addEventListener('change', () => {
     timeLabel = timeSelect.value;
@@ -110,7 +148,8 @@ import { logisticas } from '../data/destinos';
   });
 
   continueBtn.addEventListener('click', () => {
-    if (!timeLabel || !logistics) return;
+    if (!day || !timeLabel || !logistics) return;
+    setField(KEYS.day, day);
     setField(KEYS.time, timeLabel);
     setField(KEYS.timeLabel, timeLabel);
     setField(KEYS.logistics, logistics);
