@@ -56,7 +56,7 @@ const lugares = destinos[slug ?? ''] ?? [];
 <script>
   import { KEYS, requireFields, setField } from '../../lib/wizard';
 
-  requireFields(['name', 'category']);
+  requireFields(['category']);
 
   const cards = document.querySelectorAll<HTMLButtonElement>('#place-grid button');
   const continueBtn = document.getElementById('continue-btn') as HTMLButtonElement;
